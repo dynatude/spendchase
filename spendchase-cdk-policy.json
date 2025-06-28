@@ -1,0 +1,142 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "CloudFormationAccess",
+			"Effect": "Allow",
+			"Action": [
+				"cloudformation:CreateStack",
+				"cloudformation:UpdateStack",
+				"cloudformation:DeleteStack",
+				"cloudformation:DescribeStacks",
+				"cloudformation:DescribeStackEvents",
+				"cloudformation:GetTemplate",
+				"cloudformation:ValidateTemplate",
+				"cloudformation:ListStacks",
+				"cloudformation:CreateChangeSet",
+				"cloudformation:DescribeChangeSet",
+				"cloudformation:ExecuteChangeSet",
+				"cloudformation:DeleteChangeSet"
+			],
+			"Resource": "arn:aws:cloudformation:*:*:stack/SpendChaseStack/*"
+		},
+		{
+			"Sid": "S3AssetBucketAccess",
+			"Effect": "Allow",
+			"Action": [
+				"s3:*"
+			],
+			"Resource": [
+				"arn:aws:s3:::spendchase-files*",
+				"arn:aws:s3:::spendchase-files*/*",
+				"arn:aws:s3:::cdk-spendchase-*",
+				"arn:aws:s3:::cdk-spendchase-*/*"
+			]
+		},
+		{
+			"Sid": "SSMParameterStoreAccess",
+			"Effect": "Allow",
+			"Action": [
+				"ssm:GetParameter",
+				"ssm:GetParameters",
+				"ssm:GetParametersByPath",
+				"ssm:PutParameter",
+				"ssm:DeleteParameter",
+				"ssm:DescribeParameters"
+			],
+			"Resource": "arn:aws:ssm:*:*:parameter/cdk-bootstrap/spendchase/*"
+		},
+		{
+			"Sid": "IAMAccess",
+			"Effect": "Allow",
+			"Action": [
+				"iam:GetRole",
+				"iam:TagRole",
+				"iam:CreateRole",
+				"iam:DeleteRole",
+				"iam:GetRolePolicy",
+				"iam:AttachRolePolicy",
+				"iam:DetachRolePolicy",
+				"iam:PutRolePolicy",
+				"iam:DeleteRolePolicy",
+				"iam:CreatePolicy",
+				"iam:DeletePolicy",
+				"iam:PassRole"
+			],
+			"Resource": "*"
+		},
+		{
+			"Sid": "ECRAccess",
+			"Effect": "Allow",
+			"Action": [
+				"ecr:SetRepositoryPolicy",
+				"ecr:GetLifecyclePolicy",
+				"ecr:PutLifecyclePolicy",
+				"ecr:PutImageScanningConfiguration",
+				"ecr:DescribeRepositories",
+				"ecr:CreateRepository",
+				"ecr:DeleteRepository"
+			],
+			"Resource": [
+				"arn:aws:ecr:*:*:repository/cdk-spendchase-*"
+			]
+		},
+		{
+			"Sid": "LambdaAccess",
+			"Effect": "Allow",
+			"Action": [
+				"lambda:CreateFunction",
+				"lambda:UpdateFunctionCode",
+				"lambda:DeleteFunction",
+				"lambda:GetFunction",
+				"lambda:InvokeFunction",
+				"lambda:AddPermission",
+				"lambda:RemovePermission"
+			],
+			"Resource": "*"
+		},
+		{
+			"Sid": "ApiGatewayAccess",
+			"Effect": "Allow",
+			"Action": [
+				"apigateway:GET",
+				"apigateway:POST",
+				"apigateway:PUT",
+				"apigateway:DELETE",
+				"apigateway:PATCH"
+			],
+			"Resource": "*"
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"apigateway:TagResource"
+			],
+			"Resource": [
+				"arn:aws:apigateway:us-east-1::/apis/*/stages"
+			]
+		},
+		{
+			"Sid": "LogsAccess",
+			"Effect": "Allow",
+			"Action": [
+				"logs:CreateLogGroup",
+				"logs:CreateLogStream",
+				"logs:PutLogEvents",
+				"logs:DescribeLogStreams",
+				"logs:DescribeLogGroups",
+				"logs:DeleteLogGroup"
+			],
+			"Resource": "*"
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"sts:AssumeRole"
+			],
+			"Resource": [
+				"arn:aws:iam::*:role/cdk-*"
+			]
+		}
+	]
+}
