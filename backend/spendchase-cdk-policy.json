@@ -91,7 +91,8 @@
 				"lambda:GetFunction",
 				"lambda:InvokeFunction",
 				"lambda:AddPermission",
-				"lambda:RemovePermission"
+				"lambda:RemovePermission",
+				"lambda:UpdateFunctionConfiguration"
 			],
 			"Resource": "*"
 		},

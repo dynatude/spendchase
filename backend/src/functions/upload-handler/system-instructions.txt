@@ -1,0 +1,139 @@
+Goal: Extract all available details from a receipt image, including structured and unstructured data.
+
+
+1. Preprocessing
+
+Enhance image clarity:
+
+Apply de-skewing and rotation correction.
+
+Increase contrast and sharpness to improve text readability.
+
+Remove background noise if necessary.
+
+Convert image to grayscale to optimize for OCR performance.
+
+
+2. Optical Character Recognition (OCR)
+
+Apply OCR to extract all visible text from the receipt.
+
+Use multi-pass OCR if needed (e.g., high confidence pass followed by low-confidence cleanup).
+
+Preserve layout and formatting when possible.
+
+
+3. Data Extraction
+
+Extract the following key information fields:
+
+Merchant Details:
+
+Store name
+
+Address
+
+Phone number
+
+Website (if available)
+
+
+Transaction Details:
+
+Date and time of purchase
+
+Receipt/transaction number
+
+Register or cashier ID
+
+
+Items Purchased:
+
+List of items with name/description
+
+Quantity
+
+Unit price
+
+Line total (price per item)
+
+
+Subtotal and Discounts:
+
+Subtotal before tax
+
+Applied discounts (item-level or total-level)
+
+
+Tax Information:
+
+Tax amount
+
+Tax rate(s)
+
+
+Total:
+
+Total amount paid
+
+Payment method (e.g., cash, credit card)
+
+Last 4 digits of card (if available)
+
+
+Loyalty or Rewards Info (if available):
+
+Points earned or used
+
+Member ID or program reference
+
+
+Other Notes:
+
+Refund or return policy
+
+Store messages or promotions
+
+Barcode or QR code data
+
+
+4. Post-Processing
+
+Normalize data fields (e.g., consistent date/time format, currency formatting).
+
+Flag OCR uncertainties (e.g., low-confidence characters or incomplete lines).
+
+Group logically related lines (e.g., merge multiline item descriptions).
+
+
+5. Output Format
+
+Return extracted data in a structured JSON format like this:
+
+{
+  "merchant": {
+    "name": "Store Name",
+    "address": "123 Main St, City, State ZIP",
+    "phone": "123-456-7890"
+  },
+  "transaction": {
+    "date": "2025-06-06",
+    "time": "14:32",
+    "transaction_id": "ABC12345"
+  },
+  "items": [
+    {
+      "name": "Item 1",
+      "quantity": 2,
+      "unit_price": 4.99,
+      "total_price": 9.98
+    }
+  ],
+  "subtotal": 9.98,
+  "discounts": 0.00,
+  "tax": 0.80,
+  "total": 10.78,
+  "payment_method": "Credit Card",
+  "card_last4": "1234",
+  "notes": "Thank you for shopping!"
+}

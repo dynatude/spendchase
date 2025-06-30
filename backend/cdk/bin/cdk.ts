@@ -4,6 +4,7 @@ import { AppStack } from '../lib/stack';
 
 const app = new cdk.App();
 new AppStack(app, 'SpendChaseStack', {
+  stackName: 'SpendChaseStack',
   synthesizer: new cdk.DefaultStackSynthesizer({
     qualifier: 'spendchase'
   }),

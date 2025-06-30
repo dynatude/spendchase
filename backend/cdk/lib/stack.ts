@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -5,6 +6,12 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as logs from 'aws-cdk-lib/aws-logs';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Architecture } from 'aws-cdk-lib/aws-lambda';
+
+dotenv.config({
+  path: '../.env'
+});
 
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -20,15 +27,33 @@ export class AppStack extends cdk.Stack {
 
     const uploaderFunctionName = 'SpendChaseUploadHandler';
 
-    const uploaderFn = new lambda.Function(this, 'SpendChaseUploadHandler', {
+    const uploaderFn = new NodejsFunction(this, 'SpendChaseUploadHandler', {
       functionName: uploaderFunctionName,
       runtime: lambda.Runtime.NODEJS_22_X,
+      architecture: Architecture.X86_64,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('../lambda/upload-handler'),
-      environment: {
-        BUCKET_NAME: bucket.bucketName,
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        commandHooks: {
+          afterBundling(inputDir, outputDir) {
+            return [
+              `cp ${inputDir}/src/functions/upload-handler/system-instructions.txt ${outputDir}`
+            ]
+          },
+          beforeBundling() { return []; },
+          beforeInstall() { return []; }
+        }
       },
-      logRetention: logs.RetentionDays.ONE_WEEK,
+      entry: '../src/functions/upload-handler/index.ts',
+      logRetention: logs.RetentionDays.ONE_MONTH,
+      environment: {
+        AZURE_OPENAI_API_KEY: process.env.AZURE_OPENAI_API_KEY!,
+        AZURE_OPENAI_API_VERSION: process.env.AZURE_OPENAI_API_VERSION!,
+        AZURE_OPENAI_ENDPOINT: process.env.AZURE_OPENAI_ENDPOINT!,
+        AZURE_OPENAI_DEPLOYMENT: process.env.AZURE_OPENAI_DEPLOYMENT!,
+        AZURE_OPENAI_MODEL_NAME: process.env.AZURE_OPENAI_MODEL_NAME!,
+      }
     });
 
     bucket.grantReadWrite(uploaderFn);
