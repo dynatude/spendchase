@@ -1,6 +1,61 @@
 # SpendChase
 Scan, analyze receipts and manage spending
 
+# Podcast Scanning
+
+Podcasts are a rich source of startup information. Founders and executives speak more openly and informally on podcasts than in press releases or interviews, which means they often share early insights — new products, market observations, and fundraising plans — before that information is widely available elsewhere. For investors and researchers, this makes podcasts a valuable feed of "alpha": signal that can surface promising companies and founders earlier than traditional sources.
+
+SpendChase includes a podcast scanning feature inspired by this idea. Send a podcast audio file (or a pre-made transcript) to the `POST /podcast` endpoint and the system will:
+
+1. **Transcribe** the audio using Azure OpenAI Whisper (if an `audioUrl` is provided).
+2. **Analyze** the transcript with GPT-4.1 to extract:
+   - A concise episode summary
+   - Startups mentioned (name, description, funding stage, sector)
+   - Founders and executives mentioned (name, company, context)
+   - Key investment-relevant insights and themes
+
+### Request
+
+```json
+POST /podcast
+
+// Option A – provide an audio URL for transcription
+{ "audioUrl": "https://example.com/episode.mp3" }
+
+// Option B – provide an existing transcript
+{ "transcript": "In this episode we spoke with Jane Doe, founder of Acme AI..." }
+```
+
+### Response
+
+```json
+{
+  "transcript": "...",
+  "analysis": {
+    "summary": "Brief description of the episode's main topics.",
+    "episode_themes": ["AI infrastructure", "Series A fundraising"],
+    "startups": [
+      { "name": "Acme AI", "description": "Building LLM tooling for enterprises.", "stage": "Series A", "sector": "AI / SaaS" }
+    ],
+    "founders": [
+      { "name": "Jane Doe", "company": "Acme AI", "context": "Discussed go-to-market strategy and recent funding." }
+    ],
+    "key_insights": [
+      "Enterprise AI adoption is accelerating in the logistics sector.",
+      "Founders are increasingly raising at higher valuations pre-revenue."
+    ]
+  }
+}
+```
+
+### Additional environment variable
+
+Add the following to `backend/.env` alongside the other Azure OpenAI variables:
+
+    AZURE_OPENAI_WHISPER_DEPLOYMENT=
+
+Set this to the name of your Azure OpenAI Whisper deployment. If you only intend to send pre-made transcripts (not audio files), this variable is not required.
+
 # Setup LLM
 
 The AWS Lambda function that performs the core receipt scanning and data extraction delegates the heavy lifting to a gpt-4.1 backed Azure OpenAI agent.
