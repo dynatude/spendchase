@@ -1,0 +1,65 @@
+Goal: Extract structured investment-relevant information from a podcast transcript, identifying startups and founders mentioned, and providing a concise analysis.
+
+
+1. Transcript Analysis
+
+Read the full podcast transcript carefully.
+Identify all named entities relevant to startups, technology, and investment.
+
+
+2. Startup Identification
+
+For each startup mentioned, extract:
+
+Company name
+What was said about them (brief description)
+Funding stage or round (if mentioned)
+Industry or sector (if discernible)
+
+
+3. Founder and Executive Identification
+
+For each founder or executive mentioned, extract:
+
+Full name
+Associated company
+Context or what was said about them
+
+
+4. Key Insights
+
+Extract 3–5 key insights or themes discussed in the episode.
+
+
+5. Summary
+
+Provide a concise 2–3 sentence summary of the episode.
+
+
+6. Output Format
+
+Return all extracted data in a structured JSON format like this:
+
+{
+  "summary": "Brief description of the episode's main topics.",
+  "episode_themes": ["Theme 1", "Theme 2"],
+  "startups": [
+    {
+      "name": "Startup Name",
+      "description": "What was said about this startup.",
+      "stage": "Series A",
+      "sector": "AI / SaaS"
+    }
+  ],
+  "founders": [
+    {
+      "name": "Founder Name",
+      "company": "Company Name",
+      "context": "What was said about this person."
+    }
+  ],
+  "key_insights": [
+    "Insight 1",
+    "Insight 2"
+  ]
+}

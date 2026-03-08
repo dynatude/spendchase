@@ -58,6 +58,38 @@ export class AppStack extends cdk.Stack {
 
     bucket.grantReadWrite(uploaderFn);
 
+    const podcastFunctionName = 'SpendChasePodcastHandler';
+
+    const podcastFn = new NodejsFunction(this, 'SpendChasePodcastHandler', {
+      functionName: podcastFunctionName,
+      runtime: lambda.Runtime.NODEJS_22_X,
+      architecture: Architecture.X86_64,
+      handler: 'index.handler',
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        commandHooks: {
+          afterBundling(inputDir, outputDir) {
+            return [
+              `cp ${inputDir}/src/functions/podcast-handler/system-instructions.txt ${outputDir}`
+            ]
+          },
+          beforeBundling() { return []; },
+          beforeInstall() { return []; }
+        }
+      },
+      entry: '../src/functions/podcast-handler/index.ts',
+      logRetention: logs.RetentionDays.ONE_MONTH,
+      environment: {
+        AZURE_OPENAI_API_KEY: process.env.AZURE_OPENAI_API_KEY!,
+        AZURE_OPENAI_API_VERSION: process.env.AZURE_OPENAI_API_VERSION!,
+        AZURE_OPENAI_ENDPOINT: process.env.AZURE_OPENAI_ENDPOINT!,
+        AZURE_OPENAI_DEPLOYMENT: process.env.AZURE_OPENAI_DEPLOYMENT!,
+        AZURE_OPENAI_MODEL_NAME: process.env.AZURE_OPENAI_MODEL_NAME!,
+        AZURE_OPENAI_WHISPER_DEPLOYMENT: process.env.AZURE_OPENAI_WHISPER_DEPLOYMENT!,
+      }
+    });
+
     const httpApi = new apigatewayv2.HttpApi(this, 'SpendChaseApi', {
       apiName: 'SpendChaseApi',
     });
@@ -66,6 +98,12 @@ export class AppStack extends cdk.Stack {
       path: '/upload',
       methods: [apigatewayv2.HttpMethod.POST],
       integration: new integrations.HttpLambdaIntegration('LambdaIntegration', uploaderFn),
+    });
+
+    httpApi.addRoutes({
+      path: '/podcast',
+      methods: [apigatewayv2.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration('PodcastLambdaIntegration', podcastFn),
     });
 
     // Output can be used to further restrict cdk-policy api gateway access that is currently using wildcard
